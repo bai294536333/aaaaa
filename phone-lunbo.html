@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<style>
+		body{
+			height: 100%;
+			width: 100%;
+			margin: 0;
+		}
+		ul,li{
+			margin: 0;
+			padding:0;
+			list-style: none;
+		}
+		.wheel-box{
+			width: 100%;
+			height: auto;
+			border:1px solid red;
+			overflow: hidden;
+		}
+		.wheel-box .wheel{
+			height: auto;
+			overflow: hidden;
+		}
+		.wheel-box .wheel div{
+			float: left;
+			/*font-size: 0;*/
+			line-height: 0;
+		}
+		.wheel-box .wheel div img{
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div class="wheel-box">
+		<div class="wheel">
+			<div>
+				<a href="javascript:;"><img src="image/1.png" alt=""></a>
+			</div>
+			<div>
+				<a href="javascript:;"><img src="image/2.png" alt=""></a>
+			</div>
+			<div>
+				<a href="javascript:;"><img src="image/3.png" alt=""></a>
+			</div>
+			<div>
+				<a href="javascript:;"><img src="image/4.png" alt=""></a>
+			</div>
+		</div>
+	</div>
+	<script>
+		var cw=document.documentElement.clientWidth;
+		var wheel=document.querySelector('.wheel');
+		var divs=document.querySelectorAll('.wheel div');
+		var index=0;
+		// 设置imagebox与image容器的宽度
+		wheel.style.width=cw*divs.length+"px";
+		for(var i=0;i<divs.length;i++){
+			divs[i].style.width=cw+"px";
+		};
+		// 手动切换
+		wheel.addEventListener('touchstart',function(e){
+			clearInterval(t);
+			var th=e.targetTouches[0];
+			var dx=th.clientX;
+			var mx=dx;
+			var dt=e.timeStamp;
+			wheel.style.transition='';
+			function move(e){
+				var th=e.targetTouches[0];
+				mx=th.clientX;
+				var moveX=mx-dx-index*cw;
+				wheel.style.transform='translate3d('+moveX+'px,0,0)';
+			}
+			function end(e){
+				var mt=e.timeStamp;
+				wheel.style.transition='transform .5s';
+				if(Math.abs(mx-dx)>cw/2||(mt-dt)<100){
+					if(mx-dx<0){
+						index++;
+					}else if(mx-dx>0){
+						index--;
+					}
+					if(index==divs.length){
+						index=divs.length-1;
+					}
+					if(index==-1){
+						index=0;
+					}
+					wheel.style.transform='translate3d('+(-cw*index)+'px,0,0)';
+				}else{
+					wheel.style.transform='translate3d('+(-cw*index)+'px,0,0)';
+				};
+				wheel.removeEventListener('touchmove',move);
+				wheel.removeEventListener('touchend',end);
+				t=setInterval(tmove,2000);
+			}
+			wheel.addEventListener('touchmove',move);
+			wheel.addEventListener('touchend',end);
+		});
+		// 自动轮播
+		var t=setInterval(tmove,2000);
+		function tmove(){
+			index++;
+			if(index==divs.length){
+				index=0;
+			}
+			wheel.style.transition='transform .5s';
+			wheel.style.transform='translate3d('+(-index*cw)+'px,0,0)';
+		}
+	</script>
+</body>
+</html>
+
